@@ -1,22 +1,26 @@
 package main
 
 import (
-	"log"
-	"net/http"
 	"os"
-
-	"github.com/gorilla/mux"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
-	router := mux.NewRouter()
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
 
-	InitApiV1(router)
-
-	log.Print("Сервер запущен на localhost:8080 ... ")
-	err := http.ListenAndServe("localhost:8080", router)
-	if err != nil {
-		log.Printf("Не удалось запустить сервер: %s", err)
+	go func() {
+		<-c
+		StopServer()
 		os.Exit(1)
-	}
+	}()
+
+	NewServer()
+	InitApiV1()
+	StartServer()
 }
