@@ -20,11 +20,12 @@ func NewServer() {
 }
 
 func StartServer() {
-	log.Print("Сервер запущен на localhost:8080 ... ")
+	log.Printf("Сервер запущен на %s ... ", Conf.Server.ListenAddress)
+	log.Printf("Тестовый режим: %t ", Conf.TestMode)
 
 	var router = Srv.Router
 
-	if err := http.ListenAndServe("localhost:8080", router); err != nil {
+	if err := http.ListenAndServe(Conf.Server.ListenAddress, router); err != nil {
 		log.Printf("Не удалось запустить сервер: %s", err)
 		StopServer()
 		os.Exit(1)
