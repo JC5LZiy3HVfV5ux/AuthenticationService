@@ -10,9 +10,11 @@ type ServerConfig struct {
 }
 
 type Config struct {
-	Server    ServerConfig
-	TestMode  bool
-	SecretKey string
+	Server       ServerConfig
+	TestMode     bool
+	SecretKey    string
+	DatabaseURI  string
+	DatabaseName string
 }
 
 var Conf *Config
@@ -22,8 +24,10 @@ func NewConfig() {
 		Server: ServerConfig{
 			ListenAddress: getEnv("LISTEN_ADDRESS", "localhost:8080"),
 		},
-		TestMode:  getEnvAsBool("TEST_MODE", false),
-		SecretKey: getEnv("SECRET_KEY", "very secret key"),
+		TestMode:     getEnvAsBool("TEST_MODE", false),
+		SecretKey:    getEnv("SECRET_KEY", "very secret key"),
+		DatabaseURI:  getEnv("DATABASE_URI", "mongodb://localhost:27017/"),
+		DatabaseName: getEnv("DATABASE_NAME", "db"),
 	}
 }
 

@@ -3,19 +3,21 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 )
 
 type Server struct {
-	Router *mux.Router
+	Storage Storage
+	Router  *mux.Router
 }
 
 var Srv *Server
 
 func NewServer() {
 	Srv = &Server{}
+
+	Srv.Storage = NewMongoStorage()
 	Srv.Router = mux.NewRouter()
 }
 
@@ -26,12 +28,12 @@ func StartServer() {
 	var router = Srv.Router
 
 	if err := http.ListenAndServe(Conf.Server.ListenAddress, router); err != nil {
-		log.Printf("Не удалось запустить сервер: %s", err)
 		StopServer()
-		os.Exit(1)
+		log.Fatal("Не удалось запустить сервер: " + err.Error())
 	}
 }
 
 func StopServer() {
+	Srv.Storage.Close()
 	log.Print("Сервер остановлен ... ")
 }
