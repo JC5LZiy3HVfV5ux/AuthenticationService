@@ -6,7 +6,7 @@ type Storage interface {
 }
 
 type SessionManager interface {
-	Insert(value *SessionDetails) error
+	Insert(value SessionDetails) error
 	Get(guid string) (SessionDetails, error)
 	Delete(guid string) error
 }

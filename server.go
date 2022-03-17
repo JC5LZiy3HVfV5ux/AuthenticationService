@@ -8,8 +8,9 @@ import (
 )
 
 type Server struct {
-	Storage Storage
-	Router  *mux.Router
+	AuthService AuthenticationService
+	Storage     Storage
+	Router      *mux.Router
 }
 
 var Srv *Server
@@ -17,6 +18,7 @@ var Srv *Server
 func NewServer() {
 	Srv = &Server{}
 
+	Srv.AuthService = NewAuthService()
 	Srv.Storage = NewMongoStorage()
 	Srv.Router = mux.NewRouter()
 }

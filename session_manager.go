@@ -2,21 +2,14 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Реализует интерфес SessionManager из storage.go
 type Session struct {
 	collection *mongo.Collection
-}
-
-type SessionDetails struct {
-	Guid         string    `bson:"guid"`
-	CreatedAt    time.Time `bson:"created_at"`
-	ExpiredAt    time.Time `bson:"expired_at"`
-	RefreshToken string    `bson:"refresh_token"`
 }
 
 func NewSessionManager(storage *MongoStorage) SessionManager {
@@ -25,7 +18,7 @@ func NewSessionManager(storage *MongoStorage) SessionManager {
 	return session
 }
 
-func (s *Session) Insert(value *SessionDetails) error {
+func (s *Session) Insert(value SessionDetails) error {
 	if _, err := s.collection.InsertOne(context.Background(), value); err != nil {
 		return err
 	}

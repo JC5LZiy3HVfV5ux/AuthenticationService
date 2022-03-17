@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Реализует интерфес Storage из storage.go 
 type MongoStorage struct {
 	client  *mongo.Client
 	session SessionManager

@@ -1,6 +1,96 @@
 # Test task Junior BackDev
 
-Тестовое задание на позицию Junior Backend Developer
+### Token
+
+Маршрут выдает пару Access, Refresh токенов для пользователя с идентификатором (GUID) указанным в параметре запроса.
+
+Формат GUID : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 8-4-4-4-12
+
+```
+GET http://localhost:5000/api/v1/auth/token?guid=5825a481-f13e-4f80-8ee2-c16ad096709b
+```
+
+Успешный запрос вернет:
+
+```json
+201 Created
+
+{
+  "access_token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJHdWlkIjoiZjQ2OWExYjYtNWJlNy00MTNkLWE1ZDktZjFkZmZhODNmMWU5IiwiZXhwIjoxNjQ3Mzg1NDU4LCJpYXQiOjE2NDczODQ1NTh9.T7vBeN1DgB2rFvtGv6co_XswL_MmENTLvHJ7AX8m6irWO48eqTb3uDMzjjSTIB4BYqbkb_aHc1eM4hyZr_cV0Q",
+  "token_type": "Bearer",
+  "expires_at": 1647387956,
+  "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q",
+  "created_at": 1647384356
+}
+```
+
+Если GUID будет не соответствовать формату, то вернется ошибка:
+
+```json
+400 BadRequest
+```
+
+Если GUID уже задействован, то вернется ошибка:
+
+```json
+401 Unauthorized
+```
+
+Если в процессе возникнут другие неприятности, то вернется ошибка:
+
+```json
+500 InternalServerError
+```
+
+### Refresh
+
+Маршрут выполняет Refresh операцию на пару Access, Refresh токенов.
+
+```
+POST http://localhost:5000/api/v1/auth/refresh
+content-type: application/json
+```
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJHdWlkIjoiZjQ2OWExYjYtNWJlNy00MTNkLWE1ZDktZjFkZmZhODNmMWU5IiwiZXhwIjoxNjQ3Mzg1NDU4LCJpYXQiOjE2NDczODQ1NTh9.T7vBeN1DgB2rFvtGv6co_XswL_MmENTLvHJ7AX8m6irWO48eqTb3uDMzjjSTIB4BYqbkb_aHc1eM4hyZr_cV0Q",
+  "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q"
+}
+```
+
+Успешный запрос вернет:
+
+```json
+200 OK
+
+{
+  "access_token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJHdWlkIjoiZjQ2OWExYjYtNWJlNy00MTNkLWE1ZDktZjFkZmZhODNmMWU5IiwiZXhwIjoxNjQ3Mzg1NDU4LCJpYXQiOjE2NDczODQ1NTh9.T7vBeN1DgB2rFvtGv6co_XswL_MmENTLvHJ7AX8m6irWO48eqTb3uDMzjjSTIB4BYqbkb_aHc1eM4hyZr_cV0Q",
+  "token_type": "Bearer",
+  "expires_at": 1647387956,
+  "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q",
+  "created_at": 1647384356
+}
+```
+
+Если запрос будет не соответствовать формату, то вернется ошибка:
+
+```json
+400 BadRequest
+```
+
+Если access_token ещё действителен или refresh_token не действителен, то вернется ошибка:
+
+```json
+401 Unauthorized
+```
+
+Если в процессе возникнут другие неприятности, то вернется ошибка:
+
+```json
+500 InternalServerError
+```
+
+## Тестовое задание на позицию Junior Backend Developer
 
 **Используемые технологии:**
 
@@ -14,14 +104,14 @@
 
 Два REST маршрута:
 
-- Первый маршрут выдает пару Access, Refresh токенов для пользователя сидентификатором (GUID) указанным в параметре запроса
-- Второй маршрут выполняет Refresh операцию на пару Access, Refreshтокенов
+- Первый маршрут выдает пару Access, Refresh токенов для пользователя с идентификатором (GUID) указанным в параметре запроса
+- Второй маршрут выполняет Refresh операцию на пару Access, Refresh токенов
 
 **Требования:**
 
 Access токен тип JWT, алгоритм SHA512, хранить в базе строго запрещено.
 
-Refresh токен тип произвольный, формат передачи base64, хранится в базеисключительно в виде bcrypt хеша, должен быть защищен от изменения настороне клиента и попыток повторного использования.
+Refresh токен тип произвольный, формат передачи base64, хранится в базе исключительно в виде bcrypt хеша, должен быть защищен от изменения на стороне клиента и попыток повторного использования.
 
 Access, Refresh токены обоюдно связаны, Refresh операцию для Access токена можно выполнить только тем Refresh токеном который был выдан вместе с ним.
 
