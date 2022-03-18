@@ -1,6 +1,10 @@
-package main
+package storage
 
-import "time"
+import (
+	"time"
+
+	"authentication/config"
+)
 
 type SessionDetails struct {
 	Guid         string `bson:"guid"`
@@ -10,7 +14,7 @@ type SessionDetails struct {
 }
 
 func NewSessionDetails(guid, refreshToken string) (SessionDetails, error) {
-	timeDelta, err := time.ParseDuration(Conf.RefreshTokenTimeDelta)
+	timeDelta, err := time.ParseDuration(config.Conf.RefreshTokenTimeDelta)
 	if err != nil {
 		return SessionDetails{}, err
 	}

@@ -1,9 +1,11 @@
-package main
+package server
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
+	
+	"authentication/storage"
 
 	"github.com/gorilla/mux"
 )
@@ -52,7 +54,7 @@ func token(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionDetails, err := NewSessionDetails(guid, refresh_token_hash)
+	sessionDetails, err := storage.NewSessionDetails(guid, refresh_token_hash)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -138,7 +140,7 @@ func refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionDetails, err = NewSessionDetails(access_token.Claims.Guid, refresh_token_hash)
+	sessionDetails, err = storage.NewSessionDetails(access_token.Claims.Guid, refresh_token_hash)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

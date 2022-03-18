@@ -6,6 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"authentication/config"
+	"authentication/server"
+
 	"github.com/joho/godotenv"
 )
 
@@ -25,12 +28,12 @@ func main() {
 
 	go func() {
 		<-c
-		StopServer()
+		server.StopServer()
 		os.Exit(1)
 	}()
 
-	NewConfig()
-	NewServer()
-	InitApiV1()
-	StartServer()
+	config.NewConfig()
+	server.NewServer()
+	server.InitApiV1()
+	server.StartServer()
 }

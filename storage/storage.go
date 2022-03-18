@@ -1,4 +1,4 @@
-package main
+package storage
 
 type Storage interface {
 	Session() SessionManager

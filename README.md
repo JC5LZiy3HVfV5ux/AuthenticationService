@@ -90,6 +90,31 @@ content-type: application/json
 500 InternalServerError
 ```
 
+### Переменные среды установленные по умолчанию для данного проекта
+
+```
+LISTEN_ADDRESS=localhost:5000
+TEST_MODE=false
+SECRET_KEY=X4AfN38_jfWwFGd
+DATABASE_URI=mongodb://localhost:27017/
+DATABASE_NAME=db
+# "ns", "us" (or "µs"), "ms", "s", "m", "h".
+ACCESS_TOKEN_TIME_DELTA=15m
+REFRESH_TOKEN_TIME_DELTA=1h
+```
+
+<details><summary>Screenshots</summary>
+
+/api/v1/auth/token?guid=
+
+![token](img/1.jpg)
+
+/api/v1/auth/refresh
+
+![refresh](img/2.jpg)
+
+</details>
+
 ## Тестовое задание на позицию Junior Backend Developer
 
 **Используемые технологии:**

@@ -1,9 +1,11 @@
-package main
+package server
 
 import (
 	"encoding/base64"
 	"errors"
 	"time"
+
+	"authentication/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
@@ -42,7 +44,7 @@ type AuthRequest struct {
 }
 
 func NewAccessToken(guid string) (*AccessToken, error) {
-	timeDelta, err := time.ParseDuration(Conf.AccessTokenTimeDelta)
+	timeDelta, err := time.ParseDuration(config.Conf.AccessTokenTimeDelta)
 	if err != nil {
 		return &AccessToken{}, err
 	}
@@ -56,7 +58,7 @@ func NewAccessToken(guid string) (*AccessToken, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-	accessToken, err := token.SignedString([]byte(Conf.SecretKey))
+	accessToken, err := token.SignedString([]byte(config.Conf.SecretKey))
 	if err != nil {
 		return &AccessToken{}, err
 	}
@@ -149,7 +151,7 @@ func (at *AuthTokenStruct) ParseAccessToken(tokenString string) (*AccessToken, e
 		tokenString,
 		&Claims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(Conf.SecretKey), nil
+			return []byte(config.Conf.SecretKey), nil
 		},
 	)
 
