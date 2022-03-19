@@ -7,18 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Реализует интерфес SessionManager из storage.go
 type Session struct {
+	Guid         string `bson:"guid"`
+	RefreshToken string `bson:"refresh_token"`
+	ExpiredAt    int64  `bson:"expires_at"`
+}
+
+type SessionManager struct {
 	collection *mongo.Collection
 }
 
-func NewSessionManager(storage *MongoStorage) SessionManager {
-	session := &Session{}
-	session.collection = storage.GetDataBase().Collection("sessions")
-	return session
+func NewSessionManager(db *mongo.Database, collection string) *SessionManager {
+	return &SessionManager{
+		collection: db.Collection(collection),
+	}
 }
 
-func (s *Session) Insert(value SessionDetails) error {
+func (s *SessionManager) Insert(value *Session) error {
 	if _, err := s.collection.InsertOne(context.Background(), value); err != nil {
 		return err
 	}
@@ -26,17 +31,17 @@ func (s *Session) Insert(value SessionDetails) error {
 	return nil
 }
 
-func (s *Session) Get(guid string) (SessionDetails, error) {
-	var result SessionDetails
+func (s *SessionManager) Get(guid string) (*Session, error) {
+	var result Session
 
 	if err := s.collection.FindOne(context.TODO(), bson.D{{"guid", guid}}).Decode(&result); err != nil {
-		return SessionDetails{}, err
+		return &Session{}, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
-func (s *Session) Delete(guid string) error {
+func (s *SessionManager) Delete(guid string) error {
 	if _, err := s.collection.DeleteOne(context.Background(), bson.D{{"guid", guid}}); err != nil {
 		return err
 	}

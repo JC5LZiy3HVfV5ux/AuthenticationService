@@ -20,7 +20,6 @@ GET http://localhost:5000/api/v1/auth/token?guid=5825a481-f13e-4f80-8ee2-c16ad09
   "token_type": "Bearer",
   "expires_at": 1647387956,
   "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q",
-  "created_at": 1647384356
 }
 ```
 
@@ -68,7 +67,6 @@ content-type: application/json
   "token_type": "Bearer",
   "expires_at": 1647387956,
   "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q",
-  "created_at": 1647384356
 }
 ```
 
@@ -99,8 +97,8 @@ SECRET_KEY=X4AfN38_jfWwFGd
 DATABASE_URI=mongodb://localhost:27017/
 DATABASE_NAME=db
 # "ns", "us" (or "µs"), "ms", "s", "m", "h".
-ACCESS_TOKEN_TIME_DELTA=15m
-REFRESH_TOKEN_TIME_DELTA=1h
+ACCESS_TOKEN_TIME_DELTA=5m
+REFRESH_TOKEN_TIME_DELTA=15m
 ```
 
 <details><summary>Screenshots</summary>

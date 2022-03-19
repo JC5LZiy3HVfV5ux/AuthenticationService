@@ -1,13 +1,9 @@
 package main
 
 import (
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
-
 	"authentication/config"
 	"authentication/server"
+	"log"
 
 	"github.com/joho/godotenv"
 )
@@ -19,21 +15,11 @@ func init() {
 }
 
 func main() {
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt,
-		syscall.SIGHUP,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT)
-
-	go func() {
-		<-c
-		server.StopServer()
-		os.Exit(1)
-	}()
-
 	config.NewConfig()
-	server.NewServer()
-	server.InitApiV1()
-	server.StartServer()
+
+	app := server.NewServer()
+
+	if err := app.StartServer(config.Conf.Server.ListenAddress); err != nil {
+		log.Fatalf("%s", err.Error())
+	}
 }

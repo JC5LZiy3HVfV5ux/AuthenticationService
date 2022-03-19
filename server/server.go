@@ -1,44 +1,86 @@
 package server
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"authentication/config"
+	"authentication/service"
 	"authentication/storage"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Server struct {
-	AuthService AuthenticationService
-	Storage     storage.Storage
-	Router      *mux.Router
+	httpServer  *http.Server
+	authService service.Service
 }
 
-var Srv *Server
+func NewServer() *Server {
+	db := setupConnection()
 
-func NewServer() {
-	Srv = &Server{}
-
-	Srv.AuthService = NewAuthService()
-	Srv.Storage = storage.NewMongoStorage()
-	Srv.Router = mux.NewRouter()
-}
-
-func StartServer() {
-	log.Printf("Сервер запущен на %s ... ", config.Conf.Server.ListenAddress)
-	log.Printf("Тестовый режим: %t ", config.Conf.TestMode)
-
-	var router = Srv.Router
-
-	if err := http.ListenAndServe(config.Conf.Server.ListenAddress, router); err != nil {
-		StopServer()
-		log.Fatal("Не удалось запустить сервер: " + err.Error())
+	sessionManager := storage.NewSessionManager(db, "sessions")
+	return &Server{
+		authService: service.NewAuthService(sessionManager),
 	}
 }
 
-func StopServer() {
-	Srv.Storage.Close()
-	log.Print("Сервер остановлен ... ")
+func (s *Server) StartServer(listenAddress string) error {
+
+	router := mux.NewRouter()
+
+	log.Printf("Сервер запущен на %s ... ", listenAddress)
+
+	RegisterHandlers(router, s.authService)
+
+	s.httpServer = &http.Server{
+		Addr:    listenAddress,
+		Handler: router,
+	}
+
+	go func() {
+		if err := s.httpServer.ListenAndServe(); err != nil {
+			log.Fatal("Не удалось запустить сервер: " + err.Error())
+		}
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
+
+	<-quit
+
+	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdown()
+
+	return s.httpServer.Shutdown(ctx)
+}
+
+func setupConnection() *mongo.Database {
+	client, err := mongo.NewClient(options.Client().ApplyURI(config.Conf.DatabaseURI))
+	if err != nil {
+		log.Fatalf("Ошибка при попытке создать клиент mongoDB")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := client.Connect(ctx); err != nil {
+		log.Fatal("Ошибка при попытке коннекта с MongoDB: " + err.Error())
+	}
+
+	if err = client.Ping(context.Background(), nil); err != nil {
+		log.Fatal("Ошибка при попытке пинга к MongoDB: " + err.Error())
+	}
+
+	return client.Database(config.Conf.DatabaseName)
 }
