@@ -68,7 +68,7 @@ func (a *AuthService) CreateAuthSession(guid string) (*AuthSession, int, error) 
 	}, 201, nil
 }
 
-func (a *AuthService) RefreshAuthSession(accessToken, refreshToken string) (string, int, error) {
+func (a *AuthService) DeleteAuthSession(accessToken, refreshToken string) (string, int, error) {
 	if ok := utils.CompareRefreshAndAccessToken(accessToken, refreshToken); !ok {
 		return "", 400, errors.New("bad request")
 	}

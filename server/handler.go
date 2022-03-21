@@ -64,7 +64,7 @@ func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	guid, code, err := h.authService.RefreshAuthSession(request.AccessToken, request.RefreshToken)
+	guid, code, err := h.authService.DeleteAuthSession(request.AccessToken, request.RefreshToken)
 
 	if err != nil {
 		w.WriteHeader(code)
