@@ -51,7 +51,7 @@ func (s *Server) StartServer(listenAddress string) error {
 		}
 	}()
 
-	quit := make(chan os.Signal)
+	var quit = make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt,
 		syscall.SIGHUP,
 		syscall.SIGINT,
