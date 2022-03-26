@@ -4,6 +4,7 @@ import (
 	"authentication/service"
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 type Handler struct {
@@ -51,11 +52,27 @@ func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 }
 
 type RefreshRequest struct {
-	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 
 func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	headerParts := strings.Split(authHeader, " ")
+	if len(headerParts) != 2 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if headerParts[0] != "Bearer" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	var request RefreshRequest
 
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -64,7 +81,7 @@ func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	guid, code, err := h.authService.DeleteAuthSession(request.AccessToken, request.RefreshToken)
+	guid, code, err := h.authService.DeleteAuthSession(headerParts[1], request.RefreshToken)
 
 	if err != nil {
 		w.WriteHeader(code)

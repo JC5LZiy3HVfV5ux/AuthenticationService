@@ -47,12 +47,13 @@ GET http://localhost:5000/api/v1/auth/token?guid=5825a481-f13e-4f80-8ee2-c16ad09
 
 ```
 POST http://localhost:5000/api/v1/auth/refresh
-content-type: application/json
+
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDgxOTQ1NjYsImp0aSI6IjU4MjVhNDgxLWYxM2UtNGY4MC04ZWUyLWMxNmFkMDk2NzA5YiJ9.DoBBNmOMPEXKotD1MUqbNt9JnYXXtZoRGD1Velrtif7wj1wXTbv8p5l0Z-q2L3p_oBCu-R-ctIuK7MiZy0N-Bg
+Content-Type: application/json
 ```
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJHdWlkIjoiZjQ2OWExYjYtNWJlNy00MTNkLWE1ZDktZjFkZmZhODNmMWU5IiwiZXhwIjoxNjQ3Mzg1NDU4LCJpYXQiOjE2NDczODQ1NTh9.T7vBeN1DgB2rFvtGv6co_XswL_MmENTLvHJ7AX8m6irWO48eqTb3uDMzjjSTIB4BYqbkb_aHc1eM4hyZr_cV0Q",
   "refresh_token": "MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q"
 }
 ```
