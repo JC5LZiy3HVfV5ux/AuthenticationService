@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Auth</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Auth гайд</span>
+        </div>
+    </nav>
+    <main class="container my-4 min-vh-100">
+        <div>
+            <div class="p-2 mb-2 bg-primary text-white" style="border-left: 6px solid #304FFE" >
+                Как это работает ?
+            </div>
+            <pre style="background-color: #23272E; color: #fff">
+                <code>
+    +-------------------+                                          +---------------+
+    |                   |------------------ GUID -----------------&gt;|               |
+    |                   |&lt;---------- Authorization Code -----------|               |
+    |                   |                                          |               |
+    |                   |                                          |               |
+    |                   |-------------- Access Token -------------&gt;|               |
+    |                   |&lt;---------- Protected Resource -----------|               |
+    |                   |                                          |               |
+    |      Client       |                                          |    Server     |
+    |                   |-------------- Access Token -------------&gt;|               |
+    |                   |&lt;---------- Invalid Token Error ----------|               |
+    |                   |             (token is expired)           |               |
+    |                   |                                          |               |
+    |                   |                                          |               |
+    |                   |------------- Refresh Token -------------&gt;|               |
+    |                   |&lt;----------- New Access Token ------------|               |
+    |                   |              &amp; Refresh Token             |               |
+    +-------------------+                                          +---------------+</code>
+            </pre>
+        </div>
+        <div>
+            <div class="p-2 mb-2 bg-primary text-white" style="border-left: 6px solid #304FFE" >
+                1. Получить GUID
+            </div>
+            <p>Формат GUID : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 8-4-4-4-12</p>
+            <button type="button" class="btn btn-outline-primary">Получить GUID</button>
+            <form class="my-3" >
+                <div class="mb-3">
+                  <label class="form-label">GUID</label>
+                  <input class="form-control" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Submit</button>
+              </form>
+        </div>
+        <div>
+            <div class="p-2 mb-2 bg-primary text-white" style="border-left: 6px solid #304FFE" >
+                2. Получить Access токен
+            </div>
+            <pre style="background-color: #23272E; color: #fff;">
+                <code>
+    curl -X GET <span style="color: aquamarine;">"http://localhost:5000/api/v1/auth/token?guid=5825a481-f13e-4f80-8ee2-c16ad096709b"</span></code>
+            </pre>
+            <form class="my-3" >
+                <button type="submit" class="btn btn-outline-primary">Получить Access токен</button>
+            </form>
+            <pre style="background-color: #23272E; color: #fff;">
+                <code>
+    {
+        <span style="color: aquamarine;">"access_token"</span>: <span style="color:coral">"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDgxOTQ1NjYsImp0aSI6IjU4MjVhNDgxLWYxM2UtNGY4MC04ZWUyLWMxNmFkMDk2NzA5YiJ9.DoBBNmOMPEXKotD1MUqbNt9JnYXXtZoRGD1Velrtif7wj1wXTbv8p5l0Z-q2L3p_oBCu-R-ctIuK7MiZy0N-Bg"</span>
+        <span style="color: aquamarine;">"token_type"</span>: <span style="color:coral">"Bearer"</span>
+        <span style="color: aquamarine;">"expires_at"</span>: 1647387956
+        <span style="color: aquamarine;">"refresh_token"</span>: <span style="color:coral">"MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q"</span>
+    }</code>
+            </pre>
+            <form class="my-3" >
+                <div class="mb-3">
+                  <label class="form-label">Access Token</label>
+                  <input class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Refresh Token</label>
+                    <input class="form-control">
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Submit</button>
+              </form>
+        </div>
+        <div>
+            <div class="p-2 mb-2 bg-primary text-white" style="border-left: 6px solid #304FFE" >
+                3. Обновить Access токен
+            </div>
+            <pre style="background-color: #23272E; color: #fff;">
+                <code>
+    curl -X POST <span style="color: aquamarine;">"http://localhost:5000/api/v1/auth/refresh"</span>
+    -H <span style="color: aquamarine;">"Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJHdWlkIjoiZjQ2OWExYjYtNWJlNy00MTNkLWE1ZDktZjFkZmZhODNmMWU5IiwiZXhwIjoxNjQ3Mzg1NDU4LCJpYXQiOjE2NDczODQ1NTh9.T7vBeN1DgB2rFvtGv6co_XswL_MmENTLvHJ7AX8m6irWO48eqTb3uDMzjjSTIB4BYqbkb_aHc1eM4hyZr_cV0Q"</span> 
+    -H <span style="color: aquamarine;">"Content-Type: application/json"</span>
+    {
+        <span style="color: aquamarine;">"refresh_token"</span>: <span style="color:coral">"MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q"</span>
+    }
+                </code>
+            </pre>
+            <form class="my-3" >
+                <button type="submit" class="btn btn-outline-primary">Обновить Access токен</button>
+            </form>
+            <pre style="background-color: #23272E; color: #fff;">
+                <code>
+    {
+        <span style="color: aquamarine;">"access_token"</span>: <span style="color:coral">"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDgxOTQ1NjYsImp0aSI6IjU4MjVhNDgxLWYxM2UtNGY4MC04ZWUyLWMxNmFkMDk2NzA5YiJ9.DoBBNmOMPEXKotD1MUqbNt9JnYXXtZoRGD1Velrtif7wj1wXTbv8p5l0Z-q2L3p_oBCu-R-ctIuK7MiZy0N-Bg"</span>
+        <span style="color: aquamarine;">"token_type"</span>: <span style="color:coral">"Bearer"</span>
+        <span style="color: aquamarine;">"expires_at"</span>: 1647387956
+        <span style="color: aquamarine;">"refresh_token"</span>: <span style="color:coral">"MGE5ZjQ0OTItYWI5Ni00NGY0LTgxOGYtNTVhZTEzN2Q2NWNkr_cV0Q"</span>
+    }</code>
+            </pre>
+        </div>
+    </main>
+</body>
+</html>
